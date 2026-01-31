@@ -1,0 +1,13 @@
+package com.BigBull;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class BigBullServerApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
