@@ -1,0 +1,19 @@
+package com.BigBull.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class WalletDTO {
+    private Long id;
+    private String username;
+    private Double balance;
+    private Double totalInvested;
+    private Double totalWithdrawn;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}

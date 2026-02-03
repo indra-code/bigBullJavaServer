@@ -1,0 +1,127 @@
+# BigBull - Investment Portfolio Management System
+## Complete API Documentation & Feature Analysis
+
+---
+
+## 📋 Table of Contents
+1. [System Architecture](#system-architecture)
+2. [Python Backend (Flask) - Endpoints](#python-backend-flask---endpoints)
+3. [Java Backend (Spring Boot) - Endpoints](#java-backend-spring-boot---endpoints)
+4. [Current Features](#current-features)
+5. [Implementation Status](#implementation-status)
+6. [Required Updates & TODOs](#required-updates--todos)
+7. [Recommended Enhancements](#recommended-enhancements)
+8. [Database Schema](#database-schema)
+9. [Setup Instructions](#setup-instructions)
+
+---
+
+**Data Flow:**
+- Java Backend → Database (CRUD operations)
+- Java Backend → Python Backend (Real-time data, AI features)
+- Frontend → Java Backend (User interactions)
+
+---
+
+## 🐍 Python Backend (Flask) - Endpoints
+
+### Stock Data Endpoints
+
+| Method | Endpoint | Purpose | Query Params |
+|--------|----------|---------|--------------|
+| GET | `/health` | Health check | - |
+| GET | `/api/stock/search` | Search stocks | `query`, `max_results`, `include_news` |
+| GET | `/api/stock/history/<symbol>` | Historical data | `timeframe`, `period`, `interval` |
+| GET | `/api/stock/info/<symbol>` | Stock details | - |
+| GET | `/api/stock/quote/<symbol>` | Current quote | - |
+| POST | `/api/stock/multiple` | Multiple stocks data | Body: `{symbols, timeframe}` |
+| GET | `/api/timeframes` | Available timeframes | - |
+
+### AI/Analytics Endpoints
+
+| Method | Endpoint | Purpose | Query Params |
+|--------|----------|---------|--------------|
+| GET | `/api/asset/news/<symbol>` | Asset news | `limit` |
+| GET | `/api/asset/risk/<symbol>` | Risk analysis | `period` |
+| GET | `/api/asset/forecast/<symbol>` | Price forecast (10 days) | - |
+| GET | `/api/asset/insights/<symbol>` | AI insights | - |
+| GET | `/api/portfolio/optimize` | Quantum portfolio optimization | `budget`, `risk_factor`, `target_assets`, `max_assets` |
+
+### WebSocket Endpoint
+
+| Endpoint | Purpose | Message Format |
+|----------|---------|-----------------|
+| WS `/ws/stream` | Real-time stock streaming | `{action: "subscribe", symbols: [...]}` |
+
+---
+
+## ☕ Java Backend (Spring Boot) - Endpoints
+
+### Asset Management
+
+| Method | Endpoint | Purpose | Status |
+|--------|----------|---------|--------|
+| GET | `/api/assets` | Get all assets | ❓ Need to verify |
+| POST | `/api/assets` | Add new asset | ❓ Need to verify |
+| GET | `/api/assets/{id}` | Get asset details | ❓ Need to verify |
+| PUT | `/api/assets/{id}` | Update asset | ❓ Need to verify |
+| DELETE | `/api/assets/{id}` | Delete asset | ❓ Need to verify |
+
+### Portfolio Management
+
+| Method | Endpoint | Purpose | Status |
+|--------|----------|---------|--------|
+| GET | `/api/portfolio` | Get portfolio summary | ❓ Need to verify |
+| POST | `/api/portfolio/buy` | Buy asset (using points) | ❓ **NEEDS IMPLEMENTATION** |
+| POST | `/api/portfolio/sell` | Sell asset (using points) | ❓ **NEEDS IMPLEMENTATION** |
+| GET | `/api/portfolio/holdings` | Get all holdings | ❓ Need to verify |
+| PUT | `/api/portfolio/{id}` | Update portfolio item | ❓ Need to verify |
+
+### Transaction Management
+
+| Method | Endpoint | Purpose | Status |
+|--------|----------|---------|--------|
+| GET | `/api/transactions` | Get all transactions | ❓ Need to verify |
+| POST | `/api/transactions` | Create transaction | ❓ Need to verify |
+| GET | `/api/transactions/{id}` | Get transaction details | ❓ Need to verify |
+
+### Wallet Management
+
+| Method | Endpoint | Purpose | Status |
+|--------|----------|---------|--------|
+| GET | `/api/wallet` | Get wallet info | ❓ Need to verify |
+| POST | `/api/wallet/deposit` | Deposit points | ❓ **NEEDS IMPLEMENTATION** |
+| POST | `/api/wallet/withdraw` | Withdraw points | ❓ **NEEDS IMPLEMENTATION** |
+| GET | `/api/wallet/balance` | Get current balance | ❓ Need to verify |
+
+### Stock Lookup
+
+| Method | Endpoint | Purpose | Status |
+|--------|----------|---------|--------|
+| GET | `/api/stocks/search` | Search stocks (proxy to Python) | ❓ Need to verify |
+| GET | `/api/stocks/{symbol}/quote` | Get stock quote (proxy to Python) | ❓ Need to verify |
+
+---
+
+## ✅ Current Features
+
+### Portfolio Management
+- ✅ Asset CRUD operations
+- ✅ Portfolio tracking
+- ✅ Transaction history
+- ✅ Wallet management (basic)
+
+### Stock Data & Analytics (Python)
+- ✅ Real-time stock search
+- ✅ Historical price data
+- ✅ Technical analysis (volatility, Sharpe ratio, drawdown)
+- ✅ Risk assessment & scoring
+- ✅ 10-day price forecasting (ML-based)
+- ✅ AI-generated insights
+- ✅ News sentiment analysis
+- ✅ Real-time WebSocket streaming
+- ✅ Quantum portfolio optimization (Qiskit)
+
+---
+
+## 🔄 Implementation Status
