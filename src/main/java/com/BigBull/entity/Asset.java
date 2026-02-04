@@ -107,8 +107,8 @@ public class Asset {
     
     // Method to update cost per unit when buying more shares (weighted average)
     public void updateCostPerUnit(Double newQuantity, Double newPrice) {
-        if (this.quantity == 0.0) {
-            // First purchase
+        if (this.quantity == 0.0 || this.costPerUnit == null) {
+            // First purchase or cost per unit not set
             this.costPerUnit = newPrice;
         } else {
             // Calculate weighted average: (old_qty * old_price + new_qty * new_price) / total_qty

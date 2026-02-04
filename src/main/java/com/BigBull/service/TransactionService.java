@@ -2,11 +2,13 @@ package com.BigBull.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import com.BigBull.entity.Asset;
 import com.BigBull.entity.Transaction;
@@ -24,6 +26,36 @@ public class TransactionService {
     @Autowired
     private WalletService walletService;
     
+    private final RestTemplate restTemplate = new RestTemplate();
+    
+    // Fetch stock type from Flask API
+    private String fetchStockType(String symbol) {
+        try {
+            String url = "http://localhost:5000/api/stock/info/" + symbol;
+            System.out.println("[API] Fetching stock info from: " + url);
+            
+            @SuppressWarnings("unchecked")
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+            
+            if (response != null && response.containsKey("info")) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> info = (Map<String, Object>) response.get("info");
+                
+                if (info != null && info.containsKey("quoteType")) {
+                    String quoteType = info.get("quoteType").toString();
+                    System.out.println("[API] Quote type retrieved: " + quoteType);
+                    return quoteType;
+                }
+            }
+            
+            System.out.println("[API] quoteType not found, using default: STOCK");
+            return "STOCK";
+        } catch (Exception e) {
+            System.err.println("[API] Error fetching stock info: " + e.getMessage());
+            return "STOCK"; // Default fallback
+        }
+    }
+    
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
     }
@@ -40,7 +72,7 @@ public class TransactionService {
         return transactionRepository.findByAssetSymbol(symbol);
     }
     
-    @Transactional
+    @Transactional()
     public Transaction createTransaction(Long assetId, String type, Double quantity, Double price) {
         Optional<Asset> assetOpt = assetService.getAssetById(assetId);
         if (assetOpt.isEmpty()) {
@@ -116,7 +148,9 @@ public class TransactionService {
             Asset asset = assetService.getAssetBySymbol(symbol)
                 .orElseGet(() -> {
                     System.out.println("[ASSET] Creating new asset for symbol: " + symbol);
-                    return assetService.createAsset("STOCK", name, symbol);
+                    String assetType = fetchStockType(symbol);
+                    System.out.println("[ASSET] Asset type determined: " + assetType);
+                    return assetService.createAsset(assetType, name, symbol);
                 });
             
             // Log existing or new asset
