@@ -1,5 +1,6 @@
 package com.BigBull.service;
 
+import com.BigBull.dto.TransactionResponse;
 import com.BigBull.entity.Asset;
 import com.BigBull.entity.Transaction;
 import com.BigBull.entity.Wallet;
@@ -11,7 +12,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,11 +31,12 @@ public class TransactionService {
     private WalletRepository walletRepository;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private org.springframework.web.client.RestTemplate restTemplate;
 
     private static final String PYTHON_API_URL = "http://localhost:5000/api";
 
-    public Transaction executeTransaction(String username, String symbol, String type, int units) {
+    @Transactional
+    public TransactionResponse executeTransaction(String username, String symbol, String type, int units) {
         try {
             // 1. Fetch asset
             Asset asset = assetRepository.findBySymbol(symbol)
@@ -99,14 +101,16 @@ public class TransactionService {
             }
 
             // 6. Save updated entities
+            wallet.setUpdatedAt(LocalDateTime.now());
             walletRepository.save(wallet);
+            asset.setUpdatedAt(LocalDateTime.now());
             assetRepository.save(asset);
 
             // 7. Create and save transaction
             Transaction transaction = new Transaction();
             transaction.setUsername(username);
             transaction.setAsset(asset);
-            transaction.setType(type);
+            transaction.setType(type.toUpperCase());
             transaction.setUnits(units);
             transaction.setQuantity((double) units);
             transaction.setPrice(livePrice);
@@ -114,7 +118,23 @@ public class TransactionService {
             transaction.setTotalAmount(totalAmount);
             transaction.setTransactionDate(LocalDateTime.now());
 
-            return transactionRepository.save(transaction);
+            transaction = transactionRepository.save(transaction);
+
+            // 8. Return response
+            return new TransactionResponse(
+                    transaction.getId(),
+                    username,
+                    asset,
+                    type.toUpperCase(),
+                    units,
+                    livePrice,
+                    totalAmount,
+                    transaction.getTransactionDate().toString(),
+                    wallet.getBalance(),
+                    asset.getQuantity(),
+                    String.format("Transaction successful. %d units of %s %sed at %.2f",
+                            units, symbol, type.toLowerCase(), livePrice)
+            );
 
         } catch (Exception e) {
             throw new RuntimeException("Transaction failed: " + e.getMessage(), e);
@@ -129,7 +149,6 @@ public class TransactionService {
 
             String url = PYTHON_API_URL + endpoint;
 
-            // Fetch response from Python API using exchange()
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
@@ -139,8 +158,6 @@ public class TransactionService {
 
             if (response.getBody() != null) {
                 Map<String, Object> data = response.getBody();
-
-                // Extract price from response
                 Object priceObj = data.get("price");
 
                 if (priceObj != null) {
@@ -152,7 +169,7 @@ public class TransactionService {
                 }
             }
 
-            throw new RuntimeException("Failed to fetch price for: " + symbol + " - Response: " + response.getBody());
+            throw new RuntimeException("Failed to fetch price for: " + symbol);
 
         } catch (Exception e) {
             throw new RuntimeException("Python API Error for " + symbol + ": " + e.getMessage(), e);

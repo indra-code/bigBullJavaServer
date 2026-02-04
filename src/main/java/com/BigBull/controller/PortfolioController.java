@@ -1,20 +1,16 @@
 package com.BigBull.controller;
 
-import java.util.Map;
-
+import com.BigBull.dto.BuyAssetRequest;
+import com.BigBull.dto.PortfolioSummary;
+import com.BigBull.dto.SellAssetRequest;
+import com.BigBull.entity.Asset;
+import com.BigBull.service.PortfolioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.BigBull.dto.BuyAssetRequest;
-import com.BigBull.dto.SellAssetRequest;
-import com.BigBull.service.PortfolioService;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/portfolio")
@@ -24,38 +20,41 @@ public class PortfolioController {
     @Autowired
     private PortfolioService portfolioService;
 
-    @PostMapping("/buy")
-    public ResponseEntity<?> buyAsset(@RequestBody BuyAssetRequest request) {
+    @GetMapping("/summary")
+    public ResponseEntity<?> getPortfolioSummary(@RequestParam String username) {
         try {
-            return ResponseEntity.ok(portfolioService.buyAsset(request));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            PortfolioSummary summary = portfolioService.getPortfolioSummary(username);
+            return ResponseEntity.ok(summary);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(new ErrorResponse(400, e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "An unexpected error occurred"));
+            return ResponseEntity.status(500).body(new ErrorResponse(500, "Internal server error"));
         }
     }
 
-    @PostMapping("/sell")
-    public ResponseEntity<?> sellAsset(@RequestBody SellAssetRequest request) {
+    @GetMapping("/list")
+    public ResponseEntity<List<Asset>> getPortfolioList() {
         try {
-            return ResponseEntity.ok(portfolioService.sellAsset(request));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            List<Asset> assets = portfolioService.getPortfolioList();
+            return ResponseEntity.ok(assets);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "An unexpected error occurred"));
+            return ResponseEntity.status(500).build();
         }
     }
 
-    @GetMapping("/summary/{username}")
-    public ResponseEntity<?> getPortfolioSummary(@PathVariable String username) {
-        try {
-            return ResponseEntity.ok(portfolioService.getPortfolioSummary(username));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+    public static class ErrorResponse {
+        private int code;
+        private String message;
+
+        public ErrorResponse(int code, String message) {
+            this.code = code;
+            this.message = message;
         }
+
+        public int getCode() { return code; }
+        public void setCode(int code) { this.code = code; }
+
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
     }
 }
