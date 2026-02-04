@@ -1,0 +1,264 @@
+{
+  "info": {
+    "_postman_id": "portfolio-management-api",
+    "name": "Portfolio Management API Tests",
+    "description": "Complete test suite for Big Bull Portfolio Management System with Exception Handling",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Get Wallet (Initial Balance)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/wallet",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "wallet"
+          ]
+        },
+        "description": "Retrieve initial wallet balance"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Deposit Initial Amount (5000)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 5000\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/wallet/deposit",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "wallet",
+            "deposit"
+          ]
+        },
+        "description": "Deposit $5000 into wallet as initial capital"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Buy 5 Units of RELIANCE Stock",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"symbol\": \"RELIANCE\",\n  \"name\": \"Reliance Industries\",\n  \"quantity\": 5,\n  \"price\": 250\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/transactions/buy",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "transactions",
+            "buy"
+          ]
+        },
+        "description": "Buy 5 units of RELIANCE at $250 each (Total: $1,250)"
+      },
+      "response": []
+    },
+    {
+      "name": "4. Sell 4 Units of RELIANCE Stock",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"symbol\": \"RELIANCE\",\n  \"quantity\": 4,\n  \"price\": 260\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/transactions/sell",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "transactions",
+            "sell"
+          ]
+        },
+        "description": "Sell 4 units of RELIANCE at $260 each (Total Proceeds: $1,040). Remaining: 1 unit"
+      },
+      "response": []
+    },
+    {
+      "name": "5. Get RELIANCE Asset by Symbol",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/assets/symbol/RELIANCE",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "assets",
+            "symbol",
+            "RELIANCE"
+          ]
+        },
+        "description": "Retrieve RELIANCE asset details after transactions (should show 1 unit remaining)"
+      },
+      "response": []
+    },
+    {
+      "name": "6. Get Wallet (After Transactions)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/wallet",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "wallet"
+          ]
+        },
+        "description": "Retrieve wallet balance after all transactions. Expected: 5000 - 1250 + 1040 = 4790"
+      },
+      "response": []
+    },
+    {
+      "name": "7. TRY: Sell 2 More Units (EXCEPTION TEST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"symbol\": \"RELIANCE\",\n  \"quantity\": 2,\n  \"price\": 270\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/transactions/sell",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "transactions",
+            "sell"
+          ]
+        },
+        "description": "EXCEPTION TEST: Try to sell 2 units when only 1 is available. Should trigger InsufficientAssetException with proper error response"
+      },
+      "response": []
+    },
+    {
+      "name": "8. Get All Transactions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/transactions",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "transactions"
+          ]
+        },
+        "description": "Retrieve all transactions performed (should show BUY and SELL records)"
+      },
+      "response": []
+    },
+    {
+      "name": "9. Get Transactions by Symbol (RELIANCE)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/transactions/symbol/RELIANCE",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "transactions",
+            "symbol",
+            "RELIANCE"
+          ]
+        },
+        "description": "Retrieve all transactions for RELIANCE symbol"
+      },
+      "response": []
+    },
+    {
+      "name": "10. Get All Assets",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/assets",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "assets"
+          ]
+        },
+        "description": "Retrieve all assets in portfolio"
+      },
+      "response": []
+    }
+  ]
+}

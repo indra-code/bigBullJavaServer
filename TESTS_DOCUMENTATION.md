@@ -1,0 +1,91 @@
+# Test Suite Documentation
+
+This document lists all JUnit tests added to the project.
+
+## Service Tests
+
+### WalletServiceTest
+- testGetOrCreateWallet_WhenWalletExists_ReturnsExisting
+- testGetOrCreateWallet_WhenWalletDoesNotExist_CreatesNew
+- testDeposit_ValidAmount_IncreasesBalance
+- testDeposit_InvalidAmount_ThrowsInvalidAmountException
+- testWithdraw_ValidAmount_DecreasesBalance
+- testWithdraw_InsufficientBalance_ThrowsInsufficientBalanceException
+- testHasBalance_SufficientAmount_ReturnsTrue
+- testHasBalance_InsufficientAmount_ReturnsFalse
+- testDeductBalance_InsufficientBalance_ThrowsException
+- testCreditBalance_ValidAmount_CreditsCorrectly
+
+### AssetServiceTest
+- testGetAllAssets_ReturnsAllAssets
+- testGetAllAssets_EmptyDatabase_ReturnsEmptyList
+- testGetAssetById_ValidId_ReturnsAsset
+- testGetAssetById_InvalidId_ThrowsAssetNotFoundException
+- testGetAssetBySymbol_ValidSymbol_ReturnsAsset
+- testGetAssetBySymbol_InvalidSymbol_ThrowsAssetNotFoundException
+- testCreateAsset_NewAsset_CreatesSuccessfully
+- testCreateAsset_DuplicateSymbol_ReturnsExisting
+- testCreateAsset_NullParameters_ThrowsInvalidAssetQuantityException
+- testSaveAsset_ValidAsset_SavesSuccessfully
+- testDeleteAsset_InvalidId_ThrowsAssetNotFoundException
+
+### TransactionServiceTest
+- testGetAllTransactions_ReturnsAllTransactions
+- testCreateTransaction_BuyTransaction_Success
+- testCreateTransaction_BuyTransaction_InsufficientBalance_ThrowsException
+- testCreateTransaction_SellTransaction_InsufficientAsset_ThrowsException
+- testCreateTransaction_InvalidType_ThrowsInvalidTransactionTypeException
+- testCreateTransaction_InvalidQuantity_ThrowsTransactionFailedException
+- testBuyStock_NewAsset_CreatesAndBuys
+- testBuyStock_InsufficientBalance_ThrowsInsufficientBalanceException
+- testSellStock_NonExistentAsset_ThrowsAssetNotFoundException
+- testSellStock_InsufficientQuantity_ThrowsInsufficientAssetException
+
+### PortfolioServiceTest
+- testGetPortfolioSummary_EmptyPortfolio_ReturnsZeroValues
+- testGetPortfolioSummary_SingleAsset_CalculatesCorrectly
+- testGetCurrentPrice_InvalidSymbol_ThrowsPriceDataNotFoundException
+- testGetCurrentPrice_FlaskServerDown_ThrowsMarketDataUnavailableException
+
+## Controller Tests
+
+### WalletControllerTest
+- testGetWallet_ReturnsWalletDetails
+- testDeposit_ValidAmount_Returns200
+- testDeposit_InvalidAmount_Returns400
+- testWithdraw_ValidAmount_Returns200
+- testWithdraw_InsufficientBalance_Returns400WithErrorResponse
+
+### AssetControllerTest
+- testGetAllAssets_Returns200WithList
+- testGetAssetById_ValidId_Returns200
+- testGetAssetById_InvalidId_Returns404
+- testGetAssetBySymbol_ValidSymbol_Returns200
+- testGetAssetBySymbol_InvalidSymbol_Returns404
+- testCreateAsset_ValidAsset_Returns200
+- testDeleteAsset_ValidId_Returns204
+
+### TransactionControllerTest
+- testGetAllTransactions_Returns200WithList
+- testCreateTransaction_ValidBuy_Returns200
+- testBuyStock_ValidRequest_Returns200
+- testBuyStock_MissingFields_Returns400
+- testSellStock_InsufficientAsset_Returns400WithStructuredError
+
+### PortfolioControllerTest
+- testGetPortfolioSummary_Returns200WithSummary
+
+### StockControllerTest
+- testSearchStocks_Returns200
+- testGetStockQuote_Returns200
+
+## Exception Handler Tests
+
+### GlobalExceptionHandlerTest
+- testHandleInsufficientBalanceException_Returns400WithDetails
+- testHandleAssetNotFoundException_Returns404WithAssetDetails
+- testHandleInvalidTransactionTypeException_Returns400WithType
+- testHandleGenericException_Returns500
+
+To run:
+.\mvnw.cmd test
