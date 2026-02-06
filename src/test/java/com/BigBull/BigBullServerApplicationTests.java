@@ -1,13 +1,16 @@
 package com.BigBull;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.platform.suite.api.SelectPackages;
+import org.junit.platform.suite.api.Suite;
 
-@SpringBootTest
-class BigBullServerApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
+@Suite
+@SelectPackages({
+    "com.BigBull.controller",
+    "com.BigBull.exception",
+    "com.BigBull.service",
+        "com.BigBull.repository",
+        "com.BigBull.exception",
+        "com.BigBull.config"
+})
+public class BigBullServerApplicationTests {
 }

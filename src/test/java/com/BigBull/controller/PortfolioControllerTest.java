@@ -1,7 +1,9 @@
 package com.BigBull.controller;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.HashMap;
@@ -33,6 +35,9 @@ public class PortfolioControllerTest {
         when(portfolioService.getPortfolioSummary()).thenReturn(summary);
 
         mockMvc.perform(get("/api/portfolio/summary"))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalInvested", is(1000.0)))
+            .andExpect(jsonPath("$.totalCurrentValue", is(1100.0)))
+            .andExpect(jsonPath("$.totalPnl", is(100.0)));
     }
 }

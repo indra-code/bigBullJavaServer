@@ -5,6 +5,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasKey;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +47,8 @@ public class StockControllerTest {
         mockMvc.perform(get("/api/stocks/search")
                 .param("query", "rel")
                 .param("maxResults", "5"))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.results[0]", is("RELIANCE")));
     }
 
     @Test
@@ -54,6 +58,30 @@ public class StockControllerTest {
         when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(response);
 
         mockMvc.perform(get("/api/stocks/quote/RELIANCE"))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.price", is(250.0)));
+    }
+
+    @Test
+    void testGetStockHistory_Returns200() throws Exception {
+        Map<String, Object> response = new HashMap<>();
+        response.put("history", new Object[] {1, 2, 3});
+        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(response);
+
+        mockMvc.perform(get("/api/stocks/history/RELIANCE")
+                .param("timeframe", "1M"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.history").exists());
+    }
+
+    @Test
+    void testGetStockInfo_Returns200() throws Exception {
+        Map<String, Object> response = new HashMap<>();
+        response.put("symbol", "RELIANCE");
+        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(response);
+
+        mockMvc.perform(get("/api/stocks/info/RELIANCE"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.symbol", is("RELIANCE")));
     }
 }
